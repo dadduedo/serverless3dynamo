@@ -1,0 +1,96 @@
+service: transmitter-altitude-smtp-service
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: eu-west-1
+  memorySize: 128
+  environment:
+    REGION: ${self:provider.region}
+    STAGE: ${self:provider.stage}
+    EMAIL_FROM: ${ssm:/transmitter/service/smtp/email/FROM}
+    SMTP_CONFIGURATION: ${ssm:/transmitter/service/smtp/SMTP_CONFIGURATION~true}
+  iam:
+    role:
+      Fn::GetAtt:
+        - Role
+        - Arn
+
+plugins:
+  - serverless-offline-aws-ssm
+  - serverless-offline-dynamodb-streams
+  - serverless-offline
+
+package:
+  exclude:
+    - offline.yml
+    - offline.yml.dist
+    - .gitignore
+    - docker/**
+    - package.json
+    - package-lock.json
+    - serverless.yml
+
+functions:
+  http:
+    role:
+      Fn::GetAtt:
+        - Role
+        - Arn
+    name: ${self:service}-api
+    handler: handler/http.app
+    timeout: 15
+    events:
+      - http: 'ANY /'
+      - http: 'ANY {proxy+}'
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+
+  serverless-offline-dynamodb-streams:
+    endpoint: http://dynamodb:8000
+    region: ${self:provider.region}
+    accessKeyId: root
+    secretAccessKey: root
+    skipCacheInvalidation: false
+
+resources:
+  Resources:
+    Role:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        Policies:
+          - PolicyName:
+              Fn::Join:
+                - "-"
+                - - ${self:service}
+                  - "lambda"
+                  - ${self:provider.stage}
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - dynamodb:Scan
+                    - dynamodb:Query
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                    - dynamodb:UpdateItem
+                    - dynamodb:DeleteItem
+                  Resource:
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Source
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Mapping
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Mapping/index/altitude-source-code-index
