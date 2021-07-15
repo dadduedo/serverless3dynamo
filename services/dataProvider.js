@@ -4,10 +4,13 @@ const db = require('./db');
 module.exports.standard = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
+    const leadType = lead.sourceType || lead.channelType || null;
+    const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
+
     return {
         directory: 'ITA',
         workflow: 'ITA_Front',
-        init_cpg: 'ITA_BkC2C' + lead.channelType.toLowerCase().charAt(0).toUpperCase() + lead.channelType.substring(1, lead.channelType.length),
+        init_cpg: 'ITA_BkC2C' + cpgSuffix,
         ContactProfile: {
             ssupplier: lead.supplier,
             sidnavweb: lead.consolidationKey,
@@ -38,10 +41,13 @@ module.exports.standard = async ({ id, raw: lead }) => {
 module.exports.all = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
+    const leadType = lead.sourceType || lead.channelType || null;
+    const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
+
     return {
         directory: 'ITA',
         workflow: 'ITA_Front',
-        init_cpg: 'ITA_Bk' + (lead.sourceType === 'funnel' ? 'Funnel' : 'C2C') + lead.channelType.toLowerCase().charAt(0).toUpperCase() + lead.channelType.substring(1, lead.channelType.length),
+        init_cpg: 'ITA_Bk' + (lead.sourceType === 'funnel' ? 'Funnel' : 'C2C') + cpgSuffix,
         ContactProfile: {
             ssupplier: lead.supplier,
             sidnavweb: lead.consolidationKey,
@@ -122,10 +128,13 @@ module.exports.all = async ({ id, raw: lead }) => {
 module.exports.from_out_of_area = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
+    const leadType = lead.sourceType || lead.channelType || null;
+    const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
+
     return {
         directory: 'ITA',
         workflow: 'ITA_Front',
-        init_cpg: 'ITA_Bk' + (lead.sourceType === 'funnel' ? 'Funnel' : 'C2C') + lead.channelType.toLowerCase().charAt(0).toUpperCase() + lead.channelType.substring(1, lead.channelType.length),
+        init_cpg: 'ITA_Bk' + (lead.sourceType === 'funnel' ? 'Funnel' : 'C2C') + cpgSuffix,
         ContactProfile: {
             ssupplier: lead.supplier,
             sidnavweb: lead.consolidationKey,
