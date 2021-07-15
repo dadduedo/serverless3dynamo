@@ -4,7 +4,7 @@ const db = require('./db');
 module.exports.standard = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
-    const leadType = lead.sourceType || lead.channelType || null;
+    const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
 
     return {
@@ -41,7 +41,7 @@ module.exports.standard = async ({ id, raw: lead }) => {
 module.exports.all = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
-    const leadType = lead.sourceType || lead.channelType || null;
+    const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
 
     return {
@@ -128,7 +128,7 @@ module.exports.all = async ({ id, raw: lead }) => {
 module.exports.from_out_of_area = async ({ id, raw: lead }) => {
     const mapping = await db.readMapping(lead.source);
 
-    const leadType = lead.sourceType || lead.channelType || null;
+    const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
 
     return {
