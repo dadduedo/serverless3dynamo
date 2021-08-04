@@ -30,6 +30,10 @@ app.post('/send', (req, res) => {
 
     dataProvider[req.headers.scope](req.body)
         .then(dataProvided => {
+            console.log('Before send', {
+                id: req.body.id,
+                emailContent: JSON.stringify(dataProvided)
+            })
             return email
                 .send({
                     template: 'standard',
@@ -41,7 +45,10 @@ app.post('/send', (req, res) => {
                     }
                 })
         })
-        .then(data => res.json(data))
+        .then(data => {
+            console.log('After send', { response: JSON.stringify(data) })
+            res.json(data)
+        })
         .catch(err => {
             console.error('Cannot send email', {
                 scope: req.headers.scope,
