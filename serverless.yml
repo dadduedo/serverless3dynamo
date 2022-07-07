@@ -91,6 +91,7 @@ resources:
                     - dynamodb:UpdateItem
                     - dynamodb:DeleteItem
                   Resource:
-                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Source
-                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Mapping
-                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_Altitude_Mapping/index/altitude-source-code-index
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_SourceMapping
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_SourceMapping/index/discriminator-code-index
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_SourceMapping/index/discriminator-alis-source-code-index
+                    - arn:aws:dynamodb:${self:provider.region}:*:table/Transmitter_DataProvider_SourceMapping/index/code-alis-source-code-index

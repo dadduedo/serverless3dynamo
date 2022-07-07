@@ -2,7 +2,8 @@ const moment = require('moment-timezone');
 const db = require('./db');
 
 module.exports.standard = async ({ id, raw: lead }) => {
-    const mapping = await db.readMapping(lead.source);
+    const mappingInfopoint = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('infopoint', lead.source);
+    const mappingWebsource = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('websource', lead.source);
 
     const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
@@ -25,7 +26,8 @@ module.exports.standard = async ({ id, raw: lead }) => {
             homeCity: lead.homeCity || "",
             email1: lead.email || lead.email1 || "",
             homeStateProvince: lead.homeStateProvince || "",
-            sweborigin: mapping ? mapping.altitudeSourceCode : null
+            sweborigin: mappingInfopoint ? mappingInfopoint.code : null,
+            // websource: mappingWebsource ? mappingWebsource.code : null
         },
         tuples: [
             {
@@ -39,7 +41,8 @@ module.exports.standard = async ({ id, raw: lead }) => {
 }
 
 module.exports.all = async ({ id, raw: lead }) => {
-    const mapping = await db.readMapping(lead.source);
+    const mappingInfopoint = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('infopoint', lead.source);
+    const mappingWebsource = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('websource', lead.source);
 
     const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
@@ -53,7 +56,8 @@ module.exports.all = async ({ id, raw: lead }) => {
             sidnavweb: lead.consolidationKey,
             dwebcreationdate: moment().tz('Europe/Rome').format(),
             HomePhone: lead.phoneNumber,
-            sweborigin: mapping ? mapping.altitudeSourceCode : null,
+            sweborigin: mappingInfopoint ? mappingInfopoint.code : null,
+            // websource: mappingWebsource ? mappingWebsource.code : null,
             sresource: 'RESTD',
             sprospectreferencecode: lead.origin+(lead.sourceType === 'funnel' ? '_calcola' : ''),
             homePostalCode: lead.zipCode,
@@ -83,6 +87,12 @@ module.exports.all = async ({ id, raw: lead }) => {
             {
                 tag: 'click_id',
                 value: lead.hasOwnProperty('queryParameters') && lead.queryParameters.hasOwnProperty('click_id') ? lead.queryParameters.click_id : null,
+                category: '-custom_info',
+                sort: null
+            },
+            {
+                tag: 'msclkid',
+                value: lead.hasOwnProperty('queryParameters') && lead.queryParameters.hasOwnProperty('msclkid') ? lead.queryParameters.msclkid : null,
                 category: '-custom_info',
                 sort: null
             },
@@ -126,7 +136,8 @@ module.exports.all = async ({ id, raw: lead }) => {
 }
 
 module.exports.from_out_of_area = async ({ id, raw: lead }) => {
-    const mapping = await db.readMapping(lead.source);
+    const mappingInfopoint = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('infopoint', lead.source);
+    const mappingWebsource = await db.readSourceMappingByDiscriminatorAndAlisSourceCode('websource', lead.source);
 
     const leadType = lead.typeOfSource || lead.channelType || null;
     const cpgSuffix = leadType ? leadType.toLowerCase().charAt(0).toUpperCase() + leadType.substring(1, leadType.length) : '';
@@ -140,7 +151,8 @@ module.exports.from_out_of_area = async ({ id, raw: lead }) => {
             sidnavweb: lead.consolidationKey,
             dwebcreationdate: moment().tz('Europe/Rome').format(),
             HomePhone: lead.phoneNumber,
-            sweborigin: mapping ? mapping.altitudeSourceCode : null,
+            sweborigin: mappingInfopoint ? mappingInfopoint.code : null,
+            // websource: mappingWebsource ? mappingWebsource.code : null,
             sresource: 'RESTD',
             sprospectreferencecode: lead.origin+(lead.sourceType === 'funnel' ? '_calcola' : ''),
             homePostalCode: lead.hasOwnProperty('outOfAreaInfo') && lead.outOfAreaInfo.hasOwnProperty('zipCode') ? lead.outOfAreaInfo.zipCode : null,
@@ -170,6 +182,12 @@ module.exports.from_out_of_area = async ({ id, raw: lead }) => {
             {
                 tag: 'click_id',
                 value: lead.hasOwnProperty('queryParameters') && lead.queryParameters.hasOwnProperty('click_id') ? lead.queryParameters.click_id : null,
+                category: '-custom_info',
+                sort: null
+            },
+            {
+                tag: 'msclkid',
+                value: lead.hasOwnProperty('queryParameters') && lead.queryParameters.hasOwnProperty('msclkid') ? lead.queryParameters.msclkid : null,
                 category: '-custom_info',
                 sort: null
             },

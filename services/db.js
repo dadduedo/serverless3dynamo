@@ -1,81 +1,30 @@
 const { dynamodbDocumentClient } = require('./client.aws');
 
-module.exports.readSource = code => new Promise((resolve, reject) => {
-    dynamodbDocumentClient.get({
-        TableName: 'Transmitter_DataProvider_Altitude_Source',
-        Key: { code }
-    }, ((err, data) => {
-        if (err) reject(err)
-        else resolve(data.Item || null);
-    }))
-});
-
-module.exports.readMapping = alisSourceCode => new Promise((resolve, reject) => {
-    dynamodbDocumentClient.get({
-        TableName: 'Transmitter_DataProvider_Altitude_Mapping',
-        Key: { alisSourceCode }
-    }, ((err, data) => {
-        if (err) reject(err)
-        else resolve(data.Item || null);
-    }))
-});
-
-module.exports.readMappingByAltitudeSourceCode = altitudeSourceCode => new Promise((resolve, reject) => {
-    dynamodbDocumentClient.query({
-        TableName: 'Transmitter_DataProvider_Altitude_Mapping',
-        IndexName: 'altitude-source-code-index',
-        KeyConditionExpression: 'altitudeSourceCode = :altitudeSourceCode',
-        ExpressionAttributeValues: {
-            ':altitudeSourceCode': altitudeSourceCode,
-        },
-    }, ((err, data) => {
-        if (err) {
-            reject(err);
-            return;
+module.exports.readSourceMappingByDiscriminatorAndAlisSourceCode = (discriminator, alisSourceCode) =>
+    new Promise((resolve, reject) => {
+        const params = {
+            TableName: 'Transmitter_DataProvider_SourceMapping',
+            IndexName: 'discriminator-alis-source-code-index',
+            KeyConditionExpression: 'discriminator = :discriminator and alisSourceCode = :alisSourceCode',
+            ExpressionAttributeValues: {
+                ':discriminator': discriminator,
+                ':alisSourceCode': alisSourceCode
+            }
         }
 
-        if (data.Count === 0) {
-            resolve(null);
-            return;
-        }
+        dynamodbDocumentClient.query(params, (err, data) => {
+            if (err) {
+                return reject(err);
+            }
 
-        if (data.Count > 1) {
-            reject('Multiple versions founded');
-            return;
-        }
+            if (data.Count === 0) {
+                return resolve(null);
+            }
 
-        resolve(data.Items[0]);
-    }))
-});
+            if (data.Count > 1) {
+                return reject('Multiple versions founded');
+            }
 
-module.exports.scanSource = nextToken => new Promise((resolve, reject) => {
-    dynamodbDocumentClient.scan({
-        TableName: 'Transmitter_DataProvider_Altitude_Source',
-        ExclusiveStartKey: nextToken || null
-    }, (err, data) => {
-        if (err) {
-            reject(err);
-        } else {
-            resolve({
-                items: data.Items,
-                nextToken: data.LastEvaluatedKey ? data.LastEvaluatedKey : null
-            });
-        }
-    })
-});
-
-module.exports.scanMapping = nextToken => new Promise((resolve, reject) => {
-    dynamodbDocumentClient.scan({
-        TableName: 'Transmitter_DataProvider_Altitude_Mapping',
-        ExclusiveStartKey: nextToken || null,
-    }, (err, data) => {
-        if (err) {
-            reject(err);
-        } else {
-            resolve({
-                items: data.Items,
-                nextToken: data.LastEvaluatedKey ? data.LastEvaluatedKey : null
-            });
-        }
-    })
-});
+            resolve(data.Items[0]);
+        })
+    });
