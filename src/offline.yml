@@ -1,0 +1,21 @@
+/global/CONNECTOR_BASE_URL: https://httpstat.us/422
+/global/AAA_BASE_URL: http://aaa_web_1.verisure
+/global/DYNAMO_DB_VERSION: "*"
+/connector/TRANSMITTER_TOKEN: aaaaa
+auth-token: aaaaa
+connector-base-url: https://httpstat.us/200
+aaa-base-url-v1: http://aaa_web.verisure
+
+
+/transmitter/proxy-data-provider/dynamodb/table/Transmitter_DataProvider_Altitude_Source/stream: "*"
+/transmitter/proxy-data-provider/dynamodb/table/Transmitter_DataProvider_Altitude_Mapping/stream: "*"
+
+/global/pusher/APP_ID:
+/global/pusher/KEY:
+/global/pusher/SECRET:
+pusher-app-id: 1153137
+pusher-key: 2b12f5037bdf4d5d9239
+pusher-secret: b351b8f59d4e7c00ca2d
+
+email_from: "mktg.lead@verisure.it"
+smtp_configuration: "smtp://Verisure Italia:MKVlx_o3ROeblSkvAlCWCA@smtp.mandrillapp.com?authMethod=login"

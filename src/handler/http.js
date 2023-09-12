@@ -9,26 +9,26 @@ const dataProvider = require('../services/dataProvider');
 app.use(bodyParser.json());
 
 const EmailTemplate = require('email-templates');
-const email = new EmailTemplate({
+ const email = new EmailTemplate({
     views: {
         root: path.join(__dirname, '..', 'tpl')
     },
     message: {
         from: process.env.EMAIL_FROM
     },
-    transport: nodemailer.createTransport(process.env.SMTP_CONFIGURATION),
+    transport: nodemailer.createTransport({host: "smtp", port:704}),// createTransport(process.env.SMTP_CONFIGURATION)
     send: true,
     preview: false,
 });
 
 app.post('/send', (req, res) => {
-    if (!dataProvider.hasOwnProperty(req.headers.scope)) {
+     if (!dataProvider.hasOwnProperty(req.headers.scope)) {
         return res.status(404).json({
             message: `Data provider "${req.headers.scope}" was not found`
         })
     }
 
-    dataProvider[req.headers.scope](req.body)
+     dataProvider[req.headers.scope](req.body)
         .then(dataProvided => {
             console.log('Before send', {
                 id: req.body.id,

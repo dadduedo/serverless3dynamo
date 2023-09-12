@@ -1,0 +1,2 @@
+email_from: ${ssm:/transmitter/service/smtp/email/FROM}
+smtp_configuration: ${ssm:/transmitter/service/smtp/SMTP_CONFIGURATION}

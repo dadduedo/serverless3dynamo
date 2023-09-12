@@ -3,4 +3,4 @@ node_modules
 
 # Serverless directories
 .serverless
-offline.yml
+src/offline.yml.dist

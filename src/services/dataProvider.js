@@ -27,6 +27,11 @@ module.exports.standard = async ({ id, raw: lead }) => {
             email1: lead.email || lead.email1 || "",
             homeStateProvince: lead.homeStateProvince || "",
             sweborigin: mappingInfopoint ? mappingInfopoint.code : null,
+            snomereferente: lead.snomereferente || "",
+            scognomereferente: lead.scognomereferente || "",
+            sbox1: lead.sbox1 || "",
+            sbox2: lead.sbox2 || "",
+            scodicepartner: lead.scodicepartner || "",
             // websource: mappingWebsource ? mappingWebsource.code : null
         },
         tuples: [

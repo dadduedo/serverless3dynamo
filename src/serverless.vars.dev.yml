@@ -1,0 +1,2 @@
+email_from: ${file(./offline.yml):email_from}
+smtp_configuration: ${file(./offline.yml):smtp_configuration}

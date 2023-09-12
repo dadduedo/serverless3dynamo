@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  smtp:
+    image: "mailhog/mailhog"
+    ports:
+      - "704:1025"
+      - "705:8025"
+    networks:
+      - verisure
+      
+  db:
+    container_name: transmitter-altitude-smtp-service-dynamodb
+    image: amazon/dynamodb-local:latest
+    entrypoint: java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -dbPath /usr/share/dynamodb
+    ports:
+      - "5510:8000"
+    volumes:
+      - ./docker/data/dynamodb:/usr/share/dynamodb
+    networks:
+      - internal
+      - verisure
+
+  app:
+    container_name: transmitter-altitude-smtp-service
+    image: node:18-alpine
+    volumes:
+      - ./src:/projects
+    working_dir: /projects
+    restart: always
+    ports:
+      - "728:3000"
+    command:
+      - npm
+      - run
+      - dev
+    networks:
+      - internal
+      - verisure
+      
+networks:
+  verisure:
+    name: verisure
+    external: true
+  internal:

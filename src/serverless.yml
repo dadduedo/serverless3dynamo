@@ -2,15 +2,15 @@ service: transmitter-altitude-smtp-service
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   stage: ${opt:stage, 'dev'}
   region: eu-west-1
   memorySize: 128
   environment:
     REGION: ${self:provider.region}
     STAGE: ${self:provider.stage}
-    EMAIL_FROM: ${ssm:/transmitter/service/smtp/email/FROM}
-    SMTP_CONFIGURATION: ${ssm:/transmitter/service/smtp/SMTP_CONFIGURATION~true}
+    EMAIL_FROM: ${file(./serverless.vars.${self:provider.stage}.yml):email_from}
+    SMTP_CONFIGURATION: ${file(./serverless.vars.${self:provider.stage}.yml):smtp_configuration}
   iam:
     role:
       Fn::GetAtt:
@@ -18,13 +18,13 @@ provider:
         - Arn
 
 plugins:
-  - serverless-offline-aws-ssm
   - serverless-offline-dynamodb-streams
   - serverless-offline
+  - serverless-dotenv-plugin
 
 package:
   exclude:
-    - offline.yml
+    - offline.yml.dist
     - offline.yml.dist
     - .gitignore
     - docker/**
@@ -40,10 +40,11 @@ functions:
         - Arn
     name: ${self:service}-api
     handler: handler/http.app
-    timeout: 15
+    timeout: 20
     events:
-      - http: 'ANY /'
-      - http: 'ANY {proxy+}'
+      - httpApi:
+          method: ANY
+          path: /{proxy+}
 
 custom:
   serverless-offline:

@@ -14,4 +14,4 @@ docker run -d \
     -p 728:3000 \
     --network="verisure" \
     --name="transmitter-altitude-smtp-service" \
-    node:12-alpine npm run dev
+    node:18-alpine npm run dev
