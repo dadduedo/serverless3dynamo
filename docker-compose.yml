@@ -29,13 +29,7 @@ services:
     restart: always
     ports:
       - "728:3000"
-    command: 
-      - sh -c if [ ! -d "./node_modules" ]; then
-      - npm install
-      - fi
-      - npm 
-      - run 
-      - dev
+    command: sh -c "if [ ! -d /projects/node_modules ]; then npm install; fi && npm run dev"
     networks:
       - internal
       - verisure
